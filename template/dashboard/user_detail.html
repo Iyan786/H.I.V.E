@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.username }} - Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .profile-card {
+            display: inline-block;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .profile-card img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+        .post-container {
+            max-width: 600px;
+            margin: auto;
+            text-align: left;
+        }
+        .post {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .post img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .post video, .post audio {
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-card">
+        <img src="{{ user.profile.url }}" alt="Profile Picture">
+        <h2>{{ user.username }}</h2>
+        <p>Email: {{ user.email }}</p>
+        <p>Joined: {{ user.date_joined }}</p>
+        <br>
+        <a href="{% url 'manage_post' %}">Back to Users</a>
+    </div>
+    <h2>{{ user.username }}'s Posts</h2>
+    <div class="post-container">
+        {% for post in posts %}
+            <div class="post">
+                {% if post.is_banned %}
+                    <p style="color: red; font-weight: bold;">⚠ This post has been flagged as inappropriate.</p>
+                    <a href="{% url 'unban-post' post.id %}" 
+                       style="background: green; color: white; padding: 5px; border: none; text-decoration: none; display: inline-block; border-radius: 5px;">
+                        Unban Post
+                    </a>
+                {% else %}
+                    {% if post.caption %}
+                        <p>{{ post.caption }}</p>
+                    {% endif %}
+    
+                    {% if post.media_type == "image" and post.photo %}
+                        <img src="{{ post.photo.url }}" alt="Post Image">
+                    {% elif post.media_type == "video" and post.video %}
+                        <video controls>
+                            <source src="{{ post.video.url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    {% elif post.media_type == "music" and post.music %}
+                        <audio controls>
+                            <source src="{{ post.music.url }}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    {% endif %}
+    
+                    <a href="{% url 'adelete_post' post.id %}" 
+                       style="background: red; color: white; padding: 5px; border: none; text-decoration: none; display: inline-block; border-radius: 5px;">
+                        Ban Post
+                    </a>
+                {% endif %}
+                <small>Published on: {{ post.created_at }}</small>
+            </div>
+        {% empty %}
+            <p>No posts available.</p>
+        {% endfor %}
+    </div>    
+</body>
+</html>

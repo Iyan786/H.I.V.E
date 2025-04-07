@@ -1,0 +1,80 @@
+
+{% block html %}
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+{% load static %}
+{% block head %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static  'Dashboard/images/favicon.png' %}">
+    <title>Matrix Template - The Ultimate Multipurpose admin template</title>
+    <!-- Custom CSS -->
+    <link href="{% static 'Dashboard/css/float-chart.css' %}" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{% static 'Dashboard/css/style.min.css' %}" rel="stylesheet">
+    <link href="{% static 'Dashboard/css/custom.css' %}" rel="stylesheet">
+    <!-- HTML5 Shim and Respond.js' %} IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js' %} doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js' %}"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js' %}/1.4.2/respond.min.js' %}"></script>
+<![endif]-->
+{% block extra_scripts %}{% endblock extra_scripts %}
+</head>
+{% endblock head %}
+    {% block body %}
+    <body>
+        <!-- ============================================================== -->
+        <!-- Preloader - style you can find in spinners.css' %} -->
+        <!-- ============================================================== -->
+        <div class="preloader">
+            <div class="lds-ripple">
+                <div class="lds-pos"></div>
+                <div class="lds-pos"></div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- Main wrapper - style you can find in pages.scss -->
+        <!-- ============================================================== -->
+        <div id="main-wrapper">
+            {% include 'includes/header.html' %}
+            {% include 'includes/sidebar.html' %}
+            {% block content %}{% endblock content %}
+        </div>
+
+        {% block script %}
+            <script src="{% static 'Dashboard/js/jquery.min.js' %}"></script>
+            <!-- Bootstrap tether Core JavaScript -->
+            <script src="{% static 'Dashboard/js/popper.min.js' %}"></script>
+            <script src="{% static 'Dashboard/js/bootstrap.min.js' %}"></script>
+            <script src="{% static 'Dashboard/js/perfect-scrollbar.jquery.min.js' %}"></script>
+            <script src="{% static 'Dashboard/js/sparkline.js' %}"></script>
+            <!--Wave Effects -->
+            <script src="{% static 'Dashboard/js/waves.js' %}"></script>
+            <!--Menu sidebar -->
+            <script src="{% static 'Dashboard/js/sidebarmenu.js' %}"></script>
+            <!--Custom JavaScript -->
+            <script src="{% static 'Dashboard/js/custom.min.js' %}"></script>
+            <!--This page JavaScript -->
+            <!-- <script src="dist/js/pages/dashboards/dashboard1.js' %}"></script> -->
+            <!-- Charts js Files -->
+            <script src="{% static 'Dashboard/js/excanvas.js' %}"></script>
+            <script src="{% static 'Dashboard/js/jquery.flot.js' %}"></script>
+            <script src="{% static 'Dashboard/js/jquery.flot.pie.js' %}"></script>
+            <script src="{% static 'Dashboard/js/jquery.flot.time.js' %}"></script>
+            <script src="{% static 'Dashboard/js/jquery.flot.stack.js' %}"></script>
+            <script src="{% static 'Dashboard/js/jquery.flot.crosshair.js' %}"></script>
+            <script src="{% static 'Dashboard/js/jquery.flot.tooltip.min.js' %}"></script>
+            <script src="{% static 'Dashboard/js/chart-page-init.js' %}"></script>
+        
+        {% endblock script %}
+        {% block extra_script %}{% endblock extra_script %}
+    </body>
+    {% endblock body %}
+{% endblock html %}

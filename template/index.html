@@ -1,0 +1,490 @@
+{% extends "header1.html" %}
+{% load static %} 
+{% block content %}
+
+<style>
+	/* Modal Styling */
+	.custom-alert {
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background: #ff4d4d;
+		color: white;
+		padding: 20px;
+		border-radius: 8px;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+		display: none;
+		text-align: center;
+		min-width: 300px;
+		z-index: 1000;
+	}
+	.custom-alert p {
+		margin: 0 0 10px;
+		font-size: 16px;
+		font-weight: bold;
+	}
+	.custom-alert button {
+		background: white;
+		color: #ff4d4d;
+		border: none;
+		padding: 8px 16px;
+		cursor: pointer;
+		border-radius: 5px;
+		font-weight: bold;
+		transition: 0.3s;
+	}
+	.custom-alert button:hover {
+		background: #ffe6e6;
+	}
+</style>
+
+<div id="customAlert" class="custom-alert">
+	<p id="alertMessage"></p>
+	<button onclick="closeAlert()">Okay</button>
+</div>
+	<section>
+		<div class="gap gray-bg">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="row" id="page-contents">
+							<div class="col-lg-3">
+								<aside class="sidebar static">
+									<div class="widget">
+										
+										<h4 class="widget-title">Shortcuts</h4>
+										<ul class="naves">
+											<li>
+												<i class="ti-clipboard"></i>
+												<a href="{% url 'feed' %}" title="">News feed</a>
+											</li>
+											<li>
+												<i class="ti-mouse-alt"></i>
+												<a href="inbox.html" title="">Inbox</a>
+											</li>
+											<li>
+												<i class="ti-files"></i>
+												<a href="fav-page.html" title="">My pages</a>
+											</li>
+											<li>
+												<i class="ti-user"></i>
+												<a href="timeline-friends.html" title="">friends</a>
+											</li>
+											<li>
+												<i class="ti-image"></i>
+												<a href="timeline-photos.html" title="">images</a>
+											</li>
+											<li>
+												<i class="ti-video-camera"></i>
+												<a href="timeline-videos.html" title="">videos</a>
+											</li>
+											<li>
+												<i class="ti-comments-smiley"></i>
+												<a href="messages.html" title="">Messages</a>
+											</li>
+											<li>
+												<i class="ti-bell"></i>
+												<a href="notifications.html" title="">Notifications</a>
+											</li>
+											<li>
+												<i class="ti-share"></i>
+												<a href="people-nearby.html" title="">People Nearby</a>
+											</li>
+											<li>
+												<i class="fa fa-bar-chart-o"></i>
+												<a href="insights.html" title="">insights</a>
+											</li>
+											<li>
+												<i class="ti-power-off"></i>
+												<a href="/landing" title="">Logout</a>
+											</li>
+										</ul>
+									</div><!-- Shortcuts -->
+									<div class="widget">
+										<h4 class="widget-title">Recent Activity</h4>
+										<ul class="activitiez">
+											<li>
+												<div class="activity-meta">
+													<i>10 hours Ago</i>
+													<span><a href="#" title="">Commented on Video posted </a></span>
+													<h6>by <a href="time-line.html">black demon.</a></h6>
+												</div>
+											</li>
+											<li>
+												<div class="activity-meta">
+													<i>30 Days Ago</i>
+													<span><a href="#" title="">Posted your status. “Hello guys, how are you?”</a></span>
+												</div>
+											</li>
+											<li>
+												<div class="activity-meta">
+													<i>2 Years Ago</i>
+													<span><a href="#" title="">Share a video on her timeline.</a></span>
+													<h6>"<a href="#">you are so funny mr.been.</a>"</h6>
+												</div>
+											</li>
+										</ul>
+									</div><!-- recent activites -->
+									<div class="widget stick-widget">
+										<h4 class="widget-title">Who's follownig</h4>
+										<ul class="followers">
+											<li>
+												<figure><img src="{% static 'images/resources/friend-avatar2.jpg' %}" alt=""></figure>
+												<div class="friend-meta">
+													<h4><a href="time-line.html" title="">Kelly Bill</a></h4>
+													<a href="#" title="" class="underline">Add Friend</a>
+												</div>
+											</li>
+											<li>
+												<figure><img src="{% static 'images/resources/friend-avatar4.jpg' %}" alt=""></figure>
+												<div class="friend-meta">
+													<h4><a href="time-line.html" title="">Issabel</a></h4>
+													<a href="#" title="" class="underline">Add Friend</a>
+												</div>
+											</li>
+											<li>
+												<figure><img src="{% static 'images/resources/friend-avatar6.jpg' %}" alt=""></figure>
+												<div class="friend-meta">
+													<h4><a href="time-line.html" title="">Andrew</a></h4>
+													<a href="#" title="" class="underline">Add Friend</a>
+												</div>
+											</li>
+											<li>
+												<figure><img src="{% static 'images/resources/friend-avatar8.jpg' %}" alt=""></figure>
+												<div class="friend-meta">
+													<h4><a href="time-line.html" title="">Sophia</a></h4>
+													<a href="#" title="" class="underline">Add Friend</a>
+												</div>
+											</li>
+											<li>
+												<figure><img src="{% static 'images/resources/friend-avatar3.jpg' %}" alt=""></figure>
+												<div class="friend-meta">
+													<h4><a href="time-line.html" title="">Allen</a></h4>
+													<a href="#" title="" class="underline">Add Friend</a>
+												</div>
+											</li>
+										</ul>
+									</div><!-- who's following -->
+								</aside>
+							</div><!-- sidebar -->
+							<div class="col-lg-6">
+								<div class="central-meta">
+									<div class="new-postbox">
+										<figure>
+											{% if user.profile %}
+											<img src="{{ user.profile.url }}" alt="User Profile">
+											{% endif %}
+										</figure>
+										<div class="newpst-input">
+											<form method="post" enctype="multipart/form-data">
+												{% csrf_token %}
+												<textarea rows="2" id="caption" name="caption" placeholder="write something"></textarea>
+												<div class="attachments">
+													<ul>
+														<li>
+															<i class="fa fa-music"></i>
+															<label class="fileContainer">
+																<input type="file" id="music" name="music" accept="audio/*">
+															</label>
+														</li>
+														<li>
+															<i class="fa fa-image"></i>
+															<label class="fileContainer">
+																<input type="file" id="image" name="image" accept="image/*">
+															</label>
+														</li>
+														<li>
+															<i class="fa fa-video-camera"></i>
+															<label class="fileContainer">
+																<input type="file" id="video" name="video" accept="video/*">
+															</label>
+														</li>
+														<li>
+															<button type="submit">Post</button>
+														</li>
+													</ul>
+												</div>
+												
+											</form>
+										</div>
+									</div>
+								</div><!-- add post new box -->
+							
+									<div class="central-meta item">
+									<div class="user-post">
+										<div class="friend-info">
+											<figure>
+												{% if user.profile %}
+												<img src="{{ user.profile.url }}" alt="User Profile">
+												{% endif %}
+											</figure>
+											<div class="friend-name">
+												<ins><a href="time-line.html" title="">{{user.username}}</a></ins>
+												<span>published: june,2 2018 19:PM</span>
+											</div>
+											{% for post in posts %}
+											{% if post.is_banned %}
+											{% else %}
+											<div class="post-meta">
+												{% if post.media_type == "image" and post.photo %}
+    												<img src="{{ post.photo.url }}" alt="User Post" width="870" height="470" style="object-fit: cover;">
+												{% elif post.media_type == "video" and post.video %}
+    												<video width="400" controls>
+        												<source src="{{ post.video.url }}" type="video/mp4">
+        													Your browser does not support the video tag.
+   													</video>
+												{% elif post.media_type == "music" and post.music %}
+    												<audio controls>
+        												<source src="{{ post.music.url }}" type="audio/mpeg">
+        													Your browser does not support the audio element.
+    												</audio>
+												{% endif %}
+
+												<div class="we-video-info">
+													<ul>
+														<li>
+															<span class="views" data-toggle="tooltip" title="views">
+																<i class="fa fa-eye"></i>
+																<ins>{{ post.views }}</ins>
+															</span>
+														</li>
+														<li>
+															<span class="comment" data-toggle="tooltip" title="Comments">
+																<i class="fa fa-comments-o"></i>
+																<ins>52</ins>
+															</span>
+														</li>
+														<li>
+															<a href=""><span class="like" data-toggle="tooltip" title="likes">
+																<i class="fa fa-thumbs-up"></i>
+																<ins>{{ post.like }}</ins>
+															</span></a>
+														</li>
+														<li>
+															
+															<span class="dislike" data-toggle="tooltip" title="dislikes">
+																<i class="fa fa-thumbs-down"></i>
+																<ins>{{ post.dislike }}</ins>
+															</span>
+														
+														</li>
+														<li class="social-media">
+															<div class="menu">
+															  <div class="btn trigger"><i class="fa fa-share-alt"></i></div>
+															  <div class="rotater">
+																<div class="btn btn-icon"><a href="#" title=""><i class="fa fa-html5"></i></a></div>
+															  </div>
+															  <div class="rotater">
+																<div class="btn btn-icon"><a href="#" title=""><i class="fa fa-facebook"></i></a></div>
+															  </div>
+															  <div class="rotater">
+																<div class="btn btn-icon"><a href="#" title=""><i class="fa fa-google-plus"></i></a></div>
+															  </div>
+															  <div class="rotater">
+																<div class="btn btn-icon"><a href="#" title=""><i class="fa fa-twitter"></i></a></div>
+															  </div>
+															  <div class="rotater">
+																<div class="btn btn-icon"><a href="#" title=""><i class="fa fa-css3"></i></a></div>
+															  </div>
+															  <div class="rotater">
+																<div class="btn btn-icon"><a href="#" title=""><i class="fa fa-instagram"></i></a>
+																</div>
+															  </div>
+																<div class="rotater">
+																<div class="btn btn-icon"><a href="#" title=""><i class="fa fa-dribbble"></i></a>
+																</div>
+															  </div>
+															  <div class="rotater">
+																<div class="btn btn-icon"><a href="#" title=""><i class="fa fa-pinterest"></i></a>
+																</div>
+															  </div>
+
+															</div>
+														</li>
+													</ul>
+												</div>
+												
+												<div class="description">													
+													<p>
+															{{post.caption}}
+															{% endif %}
+															{% empty %}
+    													<p>No posts available.</p>
+														{% endfor %}
+													</p>
+												</div>
+											
+											</div>
+										</div>
+										<!-- loop -->
+								{% for post in posts %}
+									</div>
+									</div>
+									{% endfor %}
+								
+							</div><!-- centerl meta -->
+							<div class="col-lg-3">
+								<aside class="sidebar static">
+									<div class="widget">
+										<h4 class="widget-title">Your page</h4>	
+										<div class="your-page">
+											<figure>
+												<a href="#" title="">{% if user.profile %}
+													<img src="{{ user.profile.url }}" alt="User Profile">
+													{% endif %}</a>
+											</figure>
+											<div class="page-meta">
+												<a href="#" title="" class="underline">My page</a>
+												<span><i class="ti-comment"></i><a href="insight.html" title="">Messages <em>9</em></a></span>
+												<span><i class="ti-bell"></i><a href="insight.html" title="">Notifications <em>2</em></a></span>
+											</div>
+											<div class="page-likes">
+												<ul class="nav nav-tabs likes-btn">
+													<li class="nav-item"><a class="active" href="#link1" data-toggle="tab">likes</a></li>
+													 <li class="nav-item"><a class="" href="#link2" data-toggle="tab">views</a></li>
+												</ul>
+												<!-- Tab panes -->
+												<div class="tab-content">
+												  <div class="tab-pane active fade show " id="link1" >
+													<span><i class="ti-heart"></i>884</span>
+													  <a href="#" title="weekly-likes">35 new likes this week</a>
+													  <div class="users-thumb-list">
+														<a href="#" title="Anderw" data-toggle="tooltip">
+															<img src="{% static 'images/resources/userlist-1.jpg' %}" alt="">  
+														</a>
+														<a href="#" title="frank" data-toggle="tooltip">
+															<img src="{% static 'images/resources/userlist-2.jpg' %}" alt="">  
+														</a>
+														<a href="#" title="Sara" data-toggle="tooltip">
+															<img src="{% static 'images/resources/userlist-3.jpg' %}" alt="">  
+														</a>
+														<a href="#" title="Amy" data-toggle="tooltip">
+															<img src="{% static 'images/resources/userlist-4.jpg' %}" alt="">  
+														</a>
+														<a href="#" title="Ema" data-toggle="tooltip">
+															<img src="{% static 'images/resources/userlist-5.jpg' %}" alt="">  
+														</a>
+														<a href="#" title="Sophie" data-toggle="tooltip">
+															<img src="{% static 'images/resources/userlist-6.jpg' %}" alt="">  
+														</a>
+														<a href="#" title="Maria" data-toggle="tooltip">
+															<img src="{% static 'images/resources/userlist-7.jpg' %}" alt="">  
+														</a>  
+													  </div>
+												  </div>
+												  <div class="tab-pane fade" id="link2" >
+													  <span><i class="ti-eye"></i>440</span>
+													  <a href="#" title="weekly-likes">440 new views this week</a>
+													  <div class="users-thumb-list">
+														<a href="#" title="Anderw" data-toggle="tooltip">
+															<img src="{% static 'images/resources/userlist-1.jpg' %}" alt="">  
+														</a>
+														<a href="#" title="frank" data-toggle="tooltip">
+															<img src="{% static 'images/resources/userlist-2.jpg' %}" alt="">  
+														</a>
+														<a href="#" title="Sara" data-toggle="tooltip">
+															<img src="{% static 'images/resources/userlist-3.jpg' %}" alt="">  
+														</a>
+														<a href="#" title="Amy" data-toggle="tooltip">
+															<img src="{% static 'images/resources/userlist-4.jpg' %}" alt="">  
+														</a>
+														<a href="#" title="Ema" data-toggle="tooltip">
+															<img src="{% static 'images/resources/userlist-5.jpg' %}" alt="">  
+														</a>
+														<a href="#" title="Sophie" data-toggle="tooltip">
+															<img src="{% static 'images/resources/userlist-6.jpg' %}" alt="">  
+														</a>
+														<a href="#" title="Maria" data-toggle="tooltip">
+															<img src="{% static 'images/resources/userlist-7.jpg' %}" alt="">  
+														</a>  
+														
+													  </div>
+												  </div>
+												</div>
+											</div>
+										</div>
+									</div><!-- page like widget -->
+									<div class="widget">
+										<div class="banner medium-opacity bluesh">
+											<div class="bg-image" style="background-image: url(images/resources/baner-widgetbg.jpg)"></div>
+											<div class="baner-top">
+												<span><img alt="" src="{% static 'images/book-icon.png' %}"></span>
+												<i class="fa fa-ellipsis-h"></i>
+											</div>
+											<div class="banermeta">
+												<p>
+													create your own favourit page.
+												</p>
+												<span>like them all</span>
+												<a data-ripple="" title="" href="#">start now!</a>
+											</div>
+										</div>											
+									</div>
+									<div class="widget friend-list stick-widget">
+										<h4 class="widget-title">Friends</h4>	
+										<div id="searchDir"></div>
+										<ul id="people-list" class="friendz-list">
+											{% for user in users %}
+											{% if not user.is_superuser and user != request.user %}
+											<li>
+												<figure>
+													<a href="{% url 'messages1' receiver_username=user.username %}"><img src="{% if user.profile %}{{ user.profile.url }}{% else %}{{ default.png }}{% endif %}" alt=""></a>
+													<span class="status f-online"></span>
+												</figure>
+												<div class="friendz-meta">
+													<a href="{% url 'messages1' receiver_username=user.username %}">{{ user.username }}</a>
+													<i><a href="">{{ user.email }}</a></i>
+												</div>
+											</li>
+											{% endif %}
+											{% empty %}
+											<li>No friends found.</li>
+											
+											{% endfor %}
+										</ul>
+										
+									</div>
+									<!-- friends list sidebar -->
+								</aside>
+							</div><!-- sidebar -->
+						</div>	
+					</div>
+				</div>
+			</div>
+		</div>	
+	</section>
+
+<script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function showAlert(message) {
+                const alertBox = document.getElementById("customAlert");
+                document.getElementById("alertMessage").innerText = message;
+                alertBox.style.display = "block";
+            }
+
+            function closeAlert() {
+                document.getElementById("customAlert").style.display = "none";
+            }
+
+            function validateFile(input, allowedTypes) {
+                input.addEventListener("change", function () {
+                    if (input.files.length > 0) {
+                        const file = input.files[0];
+                        if (!allowedTypes.includes(file.type)) {
+                            showAlert(`Oops! The selected file is not a valid ${input.name} format. Try again with the correct file type.`);
+                            input.value = ""; // Reset the input field
+                        }
+                    }
+                });
+            }
+
+            validateFile(document.getElementById("music"), ["audio/mpeg", "audio/wav", "audio/ogg"]);
+            validateFile(document.getElementById("image"), ["image/jpeg", "image/png", "image/gif"]);
+            validateFile(document.getElementById("video"), ["video/mp4", "video/webm", "video/ogg"]);
+
+            // Attach close function globally
+            window.closeAlert = closeAlert;
+        });
+    </script>
+{% endblock content %}

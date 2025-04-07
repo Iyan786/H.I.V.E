@@ -1,0 +1,403 @@
+{% extends "header1.html" %}
+{% load static %} 
+{% block content %}	
+	<section>
+		<div class="feature-photo">
+			<figure><img src="{% static 'images/resources/timeline-1.jpg' %}" alt=""></figure>
+			<div class="add-btn">
+				<span>1205 followers</span>
+				<a href="#" title="" data-ripple="">Add Friend</a>
+			</div>
+			
+			<div class="container-fluid">
+				<div class="row merged">
+					<div class="col-lg-2 col-sm-3">
+						<div class="user-avatar">
+							<figure>
+								<img src="{{sender_profile}}" alt="">
+								
+							</figure>
+						</div>
+					</div>
+					<div class="col-lg-10 col-sm-9">
+						<div class="timeline-info">
+							<ul>
+								<li class="admin-name">
+								  <h5>Janice Griffith</h5>
+								  <span>Group Admin</span>
+								</li>
+								<li>
+									<a class="active" href="time-line.html" title="" data-ripple="">time line</a>
+									<a class="" href="timeline-photos.html" title="" data-ripple="">Photos</a>
+									<a class="" href="timeline-videos.html" title="" data-ripple="">Videos</a>
+									<a class="" href="timeline-friends.html" title="" data-ripple="">Friends</a>
+									<a class="" href="groups.html" title="" data-ripple="">Groups</a>
+									<a class="" href="about.html" title="" data-ripple="">about</a>
+									<a class="" href="#" title="" data-ripple="">more</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section><!-- top area -->
+
+	<section>
+		<div class="gap gray-bg">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="row" id="page-contents">
+							<div class="col-lg-3">
+								<aside class="sidebar static">
+
+									<div class="widget stick-widget">
+										<h4 class="widget-title">Shortcuts</h4>
+										<ul class="naves">
+											<li>
+												<i class="ti-clipboard"></i>
+												<a href="newsfeed.html" title="">News feed</a>
+											</li>
+											<li>
+												<i class="ti-mouse-alt"></i>
+												<a href="inbox.html" title="">Inbox</a>
+											</li>
+											<li>
+												<i class="ti-files"></i>
+												<a href="fav-page.html" title="">My pages</a>
+											</li>
+											<li>
+												<i class="ti-user"></i>
+												<a href="timeline-friends.html" title="">friends</a>
+											</li>
+											<li>
+												<i class="ti-image"></i>
+												<a href="timeline-photos.html" title="">images</a>
+											</li>
+											<li>
+												<i class="ti-video-camera"></i>
+												<a href="timeline-videos.html" title="">videos</a>
+											</li>
+											
+										</ul>
+									</div><!-- Shortcuts -->										
+								</aside>
+							</div><!-- sidebar -->
+							<div class="col-lg-6">
+								<div class="central-meta">
+									<div class="messages">
+										<h5 class="f-title"><i class="ti-bell"></i>All Messages <span class="more-options"><i class="fa fa-ellipsis-h"></i></span></h5>
+										<div class="message-box">
+											<ul class="peoples">
+												{% for user in users %}
+													{% if not user.is_superuser and user != request.user %}
+														<li>
+															<figure>
+																<img src="{% if user.profile %}{{ user.profile.url }}{% else %}{% static 'images/default.png' %}{% endif %}" alt="Profile Image">
+																<span class="status f-online"></span>
+															</figure>
+															<div class="friendz-meta">
+																<a href="{% url 'messages1' receiver_username=user.username %}" class="user-link">{{ user.username }}</a>
+																<i><a href="mailto:{{ user.email }}">{{ user.email }}</a></i>
+															</div>
+														</li>
+													{% endif %}
+												{% empty %}
+													<li>No friends found.</li>
+												{% endfor %}
+											</ul>
+										
+											<div class="peoples-mesg-box">
+												<!-- Conversation Header -->
+												<div class="conversation-head">
+													<figure><img src="{{ receiver_profile }}" alt=""></figure>
+													<span>{{ receiver_username }} <i>online</i></span>  <!-- Dynamic receiver name -->
+												</div>
+											
+												<!-- Chat Messages -->
+												<ul class="chatting-area" id="chatBox">
+													{% for msg in messages1 %}
+														{% if msg.sender == request.user %}
+															<!-- Sent Message (Right) -->
+															<li class="me">
+																<figure><img src="{{ sender_profile }}" alt=""></figure>
+																<p>{{ msg.message }}</p>
+																{% if msg.file %}
+																	<img src="{{ msg.file.url }}" alt="Sent Image" class="chat-image">
+																{% endif %}
+															</li>
+														{% else %}
+															<!-- Received Message (Left) -->
+															<li class="you">
+																<figure><img src="{{ receiver_profile }}" alt=""></figure>
+																<p>{{ msg.message }}</p>
+																{% if msg.file %}
+																	<img src="{{ msg.file.url }}" alt="Received Image" class="chat-image">
+																{% endif %}
+															</li>
+														{% endif %}
+													{% empty %}
+														<p class="text-center" id="emptyMessage">No messages yet.</p>
+													{% endfor %}
+												</ul>												
+												
+												<!-- Input Field -->
+												<div class="message-text-container">
+													<form id="chatForm" method="post" enctype="multipart/form-data">
+														{% csrf_token %}
+														<textarea id="messageInput" name="message" placeholder="Type a message..."></textarea>
+												
+														<!-- File Upload Button -->
+														<input type="file" id="fileInput" name="photo" style="display: none;">
+														<label for="fileInput" id="fileUploadButton" title="Attach file">
+															<i class="fa fa-paperclip"></i>
+														</label>
+												
+														<!-- Image Preview Before Sending -->
+														<div id="previewContainer" style="display: none;">
+															<img id="imagePreview" src="#" alt="Preview" class="chat-image-preview">
+														</div>
+												
+														<!-- Send Button -->
+														<button type="submit" id="sendButton" title="Send">
+															<i class="fa fa-paper-plane"></i>
+														</button>
+													</form>
+												</div>												
+											</div>
+											
+											<script>
+												const socket = new WebSocket(`ws://${window.location.host}/ws/chat/general/`);
+const currentUser = "{{ request.user.username }}";  // Get logged-in user's username
+const activeChatUser = "{{ receiver_username }}";   // Get the currently open chat
+
+socket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    const chatBox = document.getElementById("chatBox");
+
+    // ✅ Fix: Ensure message belongs to the active chat
+    if (data.username === currentUser || data.receiver === currentUser) {
+        if (data.username === activeChatUser || data.receiver === activeChatUser) {
+            
+            // Remove "No messages yet." if it's present
+            const emptyMessage = document.getElementById("emptyMessage");
+            if (emptyMessage) {
+                emptyMessage.remove();
+            }
+
+            let messageElement = document.createElement("li");
+            let figure = document.createElement("figure");
+            let img = document.createElement("img");
+            let paragraph = document.createElement("p");
+
+            img.src = data.username === currentUser 
+                ? "{{ sender_profile }}"  // Sender's image
+                : "{{ receiver_profile }}"; // Receiver's image
+
+            paragraph.innerText = data.message;
+            figure.appendChild(img);
+            messageElement.appendChild(figure);
+            messageElement.appendChild(paragraph);
+
+            // If sender is the current user, align right (me), else align left (you)
+            messageElement.classList.add(data.username === currentUser ? "me" : "you");
+
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to latest message
+        }
+    }
+};
+
+if (window.history.replaceState) {
+    window.history.replaceState(null, null, window.location.href);
+}
+
+document.querySelectorAll('.user-setting a').forEach(link => {
+    link.addEventListener('click', function(event) {
+        event.stopPropagation(); // Prevent interference from parent elements
+    });
+});
+
+
+document.getElementById("messageInput").addEventListener("keypress", function(event) {
+        if (event.key === "Enter" && !event.shiftKey) { 
+            event.preventDefault(); // Prevents new line in textarea
+            document.getElementById("sendButton").click(); // Simulate button click
+        }
+    });
+
+function sendMessage() {
+    const messageInput = document.getElementById("messageInput");
+
+    if (messageInput.value.trim() !== "") {
+        socket.send(JSON.stringify({
+            "message": messageInput.value,
+            "username": currentUser,
+            "receiver": activeChatUser  // Send message to the correct chat
+        }));
+
+        messageInput.value = ""; // Clear input box after sending
+    }
+}
+
+
+document.getElementById("sendButton").addEventListener("click", function(event) {
+    event.preventDefault(); // Prevent form submission
+    sendMessage();
+});
+
+// ✅ Save scroll position before clicking a username
+document.querySelectorAll(".user-link").forEach(link => {
+    link.addEventListener("click", function() {
+        sessionStorage.setItem("scrollPos", window.scrollY); // Save scroll position
+    });
+});
+
+// ✅ Restore scroll position after page reloads
+document.addEventListener("DOMContentLoaded", function() {
+    if (sessionStorage.getItem("scrollPos") !== null) {
+        window.scrollTo(0, sessionStorage.getItem("scrollPos"));
+        sessionStorage.removeItem("scrollPos"); // Remove after restoring
+    }
+});
+
+document.getElementById("chatForm").addEventListener("submit", function(event) {
+    event.preventDefault();  // Prevent default form submission
+
+    let formData = new FormData(this);
+    fetch(window.location.pathname, {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message || data.file_url) {
+            let chatBox = document.querySelector(".chat-messages");
+            let newMessage = document.createElement("p");
+            newMessage.innerHTML = `<strong>${data.sender}</strong>: ${data.message}`;
+            if (data.file_url) {
+                newMessage.innerHTML += ` <a href="${data.file_url}" target="_blank">📎 File</a>`;
+            }
+            chatBox.appendChild(newMessage);
+            document.getElementById("messageInput").value = "";
+        }
+    })
+    .catch(error => console.error("Error:", error));
+});
+
+document.getElementById("fileInput").addEventListener("change", function(event) {
+    let file = event.target.files[0];
+    if (file) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            let previewContainer = document.getElementById("previewContainer");
+            let imagePreview = document.getElementById("imagePreview");
+            imagePreview.src = e.target.result;
+            previewContainer.style.display = "block";  // Show preview
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+document.getElementById("chatForm").addEventListener("submit", function(event) {
+    event.preventDefault();  // Prevent default form submission
+
+    let formData = new FormData(this);
+    fetch(window.location.pathname, {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message || data.file_url) {
+            let chatBox = document.getElementById("chatBox");
+            let newMessage = document.createElement("li");
+            newMessage.classList.add("me");
+
+            newMessage.innerHTML = `
+                <figure><img src="${data.sender_profile}" alt=""></figure>
+                <p>${data.message}</p>
+                ${data.file_url ? `<img src="${data.file_url}" alt="Sent Image" class="chat-image">` : ""}
+            `;
+
+            chatBox.appendChild(newMessage);
+            document.getElementById("messageInput").value = "";
+            document.getElementById("previewContainer").style.display = "none";  // Hide preview
+        }
+    })
+    .catch(error => console.error("Error:", error));
+});
+
+
+											</script>
+										</div>
+									</div>
+								</div>	
+							</div><!-- centerl meta -->
+							<div class="col-lg-3">
+								<aside class="sidebar static">
+									<div class="widget">
+											<h4 class="widget-title">Socials</h4>
+											<ul class="socials">
+												<li class="facebook">
+													<a title="" href="#"><i class="fa fa-facebook"></i> <span>facebook</span> <ins>45 likes</ins></a>
+												</li>
+												<li class="twitter">
+													<a title="" href="#"><i class="fa fa-twitter"></i> <span>twitter</span><ins>25 likes</ins></a>
+												</li>
+												<li class="google">
+													<a title="" href="#"><i class="fa fa-google"></i> <span>google</span><ins>35 likes</ins></a>
+												</li>
+											</ul>
+										</div>
+									<div class="widget stick-widget">
+										<h4 class="widget-title">Who's follownig</h4>
+										<ul class="followers">
+											<li>
+												<figure><img src="{% static 'images/resources/friend-avatar2.jpg' %}" alt=""></figure>
+												<div class="friend-meta">
+													<h4><a href="time-line.html" title="">Kelly Bill</a></h4>
+													<a href="#" title="" class="underline">Add Friend</a>
+												</div>
+											</li>
+											<li>
+												<figure><img src="{% static 'images/resources/friend-avatar4.jpg' %}" alt=""></figure>
+												<div class="friend-meta">
+													<h4><a href="time-line.html" title="">Issabel</a></h4>
+													<a href="#" title="" class="underline">Add Friend</a>
+												</div>
+											</li>
+											<li>
+												<figure><img src="{% static 'images/resources/friend-avatar6.jpg' %}" alt=""></figure>
+												<div class="friend-meta">
+													<h4><a href="time-line.html" title="">Andrew</a></h4>
+													<a href="#" title="" class="underline">Add Friend</a>
+												</div>
+											</li>
+											<li>
+												<figure><img src="{% static 'images/resources/friend-avatar8.jpg' %}" alt=""></figure>
+												<div class="friend-meta">
+													<h4><a href="time-line.html" title="">Sophia</a></h4>
+													<a href="#" title="" class="underline">Add Friend</a>
+												</div>
+											</li>
+											<li>
+												<figure><img src="{% static 'images/resources/friend-avatar3.jpg' %}" alt=""></figure>
+												<div class="friend-meta">
+													<h4><a href="time-line.html" title="">Allen</a></h4>
+													<a href="#" title="" class="underline">Add Friend</a>
+												</div>
+											</li>
+										</ul>
+									</div><!-- who's following -->
+								</aside>
+							</div><!-- sidebar -->
+						</div>	
+					</div>
+				</div>
+			</div>
+		</div>	
+	</section>
+
+	{% endblock content %}

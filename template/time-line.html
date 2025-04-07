@@ -1,0 +1,696 @@
+{% extends "header1.html" %}
+{% load static %} 
+{% block content %}
+<style>
+	/* Animation for like and dislike buttons */
+	.like, .dislike {
+		position: relative;
+		cursor: pointer;
+		transition: transform 0.2s ease;
+	}
+	
+	.like.clicked, .dislike.clicked {
+		transform: scale(1.5); /* Larger pop effect */
+	}
+	
+	.like.clicked i, .dislike.clicked i {
+		color: #007bff; /* Blue for thumbs-up */
+		transition: color 0.2s ease;
+	}
+	
+	.dislike.clicked i {
+		color: #dc3545; /* Red for thumbs-down */
+		transition: color 0.2s ease;
+	}
+	
+	/* Glow effect for like and dislike */
+	.like.clicked::after, .dislike.clicked::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 123, 255, 0.5); /* Blue glow for like */
+		border-radius: 50%;
+		transform: translate(-50%, -50%) scale(0);
+		animation: glow 0.5s ease-out forwards;
+	}
+	
+	.dislike.clicked::after {
+		background: rgba(220, 53, 69, 0.5); /* Red glow for dislike */
+	}
+	
+	/* Keyframes for the glow effect */
+	@keyframes glow {
+		0% {
+			transform: translate(-50%, -50%) scale(0);
+			opacity: 1;
+		}
+		100% {
+			transform: translate(-50%, -50%) scale(2);
+			opacity: 0;
+		}
+	}
+	
+	/* Optional: Add a "burst" effect */
+	@keyframes burst {
+		0% {
+			transform: scale(1);
+			opacity: 1;
+		}
+		100% {
+			transform: scale(2);
+			opacity: 0;
+		}
+	}
+	
+	.like.clicked .burst, .dislike.clicked .burst {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 10px;
+		height: 10px;
+		background: #007bff; /* Blue for like */
+		border-radius: 50%;
+		animation: burst 0.5s ease-out forwards;
+	}
+	
+	.dislike.clicked .burst {
+		background: #dc3545; /* Red for dislike */
+	}
+	</style>
+
+<style>
+.like1 {
+    color: green; /* Default color for like */
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.like1.liked1 {
+    color: blue; /* Change to blue if liked */
+    cursor: default; /* Change cursor to default when not clickable */
+}
+	
+	.dislike1 {
+		color: gray; /* Default color for dislike */
+		cursor: pointer;
+		transition: color 0.2s ease;
+	}
+	
+	.dislike1.disliked1 {
+		color: red; /* Change to red if disliked */
+	}
+
+	ins {
+    display: inline !important;
+    visibility: visible !important;
+}
+	</style>
+	
+
+	<section>
+		<div class="feature-photo">
+			<figure><img src="{%static 'images/resources/timeline-1.jpg' %}" alt=""></figure>
+			<div class="add-btn">
+				<span>1205 followers</span>
+				<a href="#" title="" data-ripple="">Add Friend</a>
+			</div>
+			<form class="edit-phto">
+				<i class="fa fa-camera-retro"></i>
+				<label class="fileContainer">
+					Edit Cover Photo
+				<input type="file"/>
+				</label>
+			</form>
+			<div class="container-fluid">
+				<div class="row merged">
+					<div class="col-lg-2 col-sm-3">
+						<div class="user-avatar">
+							<figure>
+								{% if user.profile %}
+									<img src="{{ user.profile.url }}" alt="User Profile">
+									{% endif %}
+								<form class="edit-phto">
+									<i class="fa fa-camera-retro"></i>
+									<label class="fileContainer">
+										Edit Display Photo
+										<input type="file"/>
+									</label>
+								</form>
+							</figure>
+						</div>
+					</div>
+					<div class="col-lg-10 col-sm-9">
+						<div class="timeline-info">
+							<ul>
+								<li class="admin-name">
+								  <h5>Janice Griffith</h5>
+								  <span>Group Admin</span>
+								</li>
+								<li>
+									<a class="active" href="time-line.html" title="" data-ripple="">time line</a>
+									<a class="" href="timeline-photos.html" title="" data-ripple="">Photos</a>
+									<a class="" href="timeline-videos.html" title="" data-ripple="">Videos</a>
+									<a class="" href="timeline-friends.html" title="" data-ripple="">Friends</a>
+									<a class="" href="timeline-groups.html" title="" data-ripple="">Groups</a>
+									<a class="" href="about.html" title="" data-ripple="">about</a>
+									<a class="" href="#" title="" data-ripple="">more</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section><!-- top area -->
+		
+	<section>
+		<div class="gap gray-bg">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="row" id="page-contents">
+							<div class="col-lg-3">
+								<aside class="sidebar static">
+									<div class="widget">
+											<h4 class="widget-title">Socials</h4>
+											<ul class="socials">
+												<li class="facebook">
+													<a title="" href="#"><i class="fa fa-facebook"></i> <span>facebook</span> <ins>45 likes</ins></a>
+												</li>
+												<li class="twitter">
+													<a title="" href="#"><i class="fa fa-twitter"></i> <span>twitter</span><ins>25 likes</ins></a>
+												</li>
+												<li class="google">
+													<a title="" href="#"><i class="fa fa-google"></i> <span>google</span><ins>35 likes</ins></a>
+												</li>
+											</ul>
+										</div>
+									<div class="widget">
+										<h4 class="widget-title">Shortcuts</h4>
+										<ul class="naves">
+											<li>
+												<i class="ti-clipboard"></i>
+												<a href="newsfeed.html" title="">News feed</a>
+											</li>
+											<li>
+												<i class="ti-mouse-alt"></i>
+												<a href="inbox.html" title="">Inbox</a>
+											</li>
+											<li>
+												<i class="ti-files"></i>
+												<a href="fav-page.html" title="">My pages</a>
+											</li>
+											<li>
+												<i class="ti-user"></i>
+												<a href="timeline-friends.html" title="">friends</a>
+											</li>
+											<li>
+												<i class="ti-image"></i>
+												<a href="timeline-photos.html" title="">images</a>
+											</li>
+											<li>
+												<i class="ti-video-camera"></i>
+												<a href="timeline-videos.html" title="">videos</a>
+											</li>
+											<li>
+												<i class="ti-comments-smiley"></i>
+												<a href="messages.html" title="">Messages</a>
+											</li>
+											<li>
+												<i class="ti-bell"></i>
+												<a href="notifications.html" title="">Notifications</a>
+											</li>
+											<li>
+												<i class="ti-share"></i>
+												<a href="people-nearby.html" title="">People Nearby</a>
+											</li>
+											<li>
+												<i class="fa fa-bar-chart-o"></i>
+												<a href="insights.html" title="">insights</a>
+											</li>
+											<li>
+												<i class="ti-power-off"></i>
+												<a href="landing.html" title="">Logout</a>
+											</li>
+										</ul>
+									</div><!-- Shortcuts -->
+									<div class="widget">
+										<h4 class="widget-title">Recent Activity</h4>
+										<ul class="activitiez">
+											<li>
+												<div class="activity-meta">
+													<i>10 hours Ago</i>
+													<span><a href="#" title="">Commented on Video posted </a></span>
+													<h6>by <a href="newsfeed.html">black demon.</a></h6>
+												</div>
+											</li>
+											<li>
+												<div class="activity-meta">
+													<i>30 Days Ago</i>
+													<span><a href="newsfeed.html" title="">Posted your status. “Hello guys, how are you?”</a></span>
+												</div>
+											</li>
+											<li>
+												<div class="activity-meta">
+													<i>2 Years Ago</i>
+													<span><a href="#" title="">Share a video on her timeline.</a></span>
+													<h6>"<a href="newsfeed.html">you are so funny mr.been.</a>"</h6>
+												</div>
+											</li>
+										</ul>
+									</div><!-- recent activites -->
+									<div class="widget stick-widget">
+										<h4 class="widget-title">Who's follownig</h4>
+										<ul class="followers">
+											<li>
+												<figure><img src="{% static 'images/resources/friend-avatar2.jpg' %}" alt=""></figure>
+												<div class="friend-meta">
+													<h4><a href="time-line.html" title="">Kelly Bill</a></h4>
+													<a href="#" title="" class="underline">Add Friend</a>
+												</div>
+											</li>
+											<li>
+												<figure><img src="{% static 'images/resources/friend-avatar4.jpg' %}" alt=""></figure>
+												<div class="friend-meta">
+													<h4><a href="time-line.html" title="">Issabel</a></h4>
+													<a href="#" title="" class="underline">Add Friend</a>
+												</div>
+											</li>
+											<li>
+												<figure><img src="{% static 'images/resources/friend-avatar6.jpg' %}" alt=""></figure>
+												<div class="friend-meta">
+													<h4><a href="time-line.html" title="">Andrew</a></h4>
+													<a href="#" title="" class="underline">Add Friend</a>
+												</div>
+											</li>
+											<li>
+												<figure><img src="{% static 'images/resources/friend-avatar8.jpg' %}" alt=""></figure>
+												<div class="friend-meta">
+													<h4><a href="time-line.html" title="">Sophia</a></h4>
+													<a href="#" title="" class="underline">Add Friend</a>
+												</div>
+											</li>
+											<li>
+												<figure><img src="{% static 'images/resources/friend-avatar3.jpg' %}" alt=""></figure>
+												<div class="friend-meta">
+													<h4><a href="time-line.html" title="">Allen</a></h4>
+													<a href="#" title="" class="underline">Add Friend</a>
+												</div>
+											</li>
+										</ul>
+									</div><!-- who's following -->
+								</aside>
+							</div><!-- sidebar -->
+							<div class="col-lg-6">
+									<div class="central-meta item">
+										<div class="new-postbox">
+											<figure>
+												<img src="{{ user.profile.url }}" alt="">
+											</figure>
+											<div class="newpst-input">
+												<form method="post">
+													<textarea rows="2" placeholder="write something"></textarea>
+													<div class="attachments">
+														<ul>
+															<li>
+																<i class="fa fa-music"></i>
+																<label class="fileContainer">
+																	<input type="file">
+																</label>
+															</li>
+															<li>
+																<i class="fa fa-image"></i>
+																<label class="fileContainer">
+																	<input type="file">
+																</label>
+															</li>
+															<li>
+																<i class="fa fa-video-camera"></i>
+																<label class="fileContainer">
+																	<input type="file">
+																</label>
+															</li>
+															<li>
+																<i class="fa fa-camera"></i>
+																<label class="fileContainer">
+																	<input type="file">
+																</label>
+															</li>
+															<li>
+																<button type="submit">Publish</button>
+															</li>
+														</ul>
+													</div>
+												</form>
+											</div>
+										</div>
+									</div><!-- add post new box -->
+									{% for post in posts %}
+<div class="central-meta item">
+    <div class="user-post">
+        <div class="friend-info">
+            <figure>
+                <img src="{{ post.user.profile.url }}" alt="">
+            </figure>
+            <div class="friend-name">
+                <ins><a href="{{ post.user.get_absolute_url }}" title="">{{ post.user.username }}</a></ins>
+                <span>published: {{ post.created_at|date:"F j, Y H:i A" }}</span>
+            </div>
+            <div class="description">
+                <p>
+                    {{ post.caption|safe }}
+                </p>
+            </div>
+            <div class="post-meta">
+				{% if post.media_type == "image" and post.photo %}
+                <div class="linked-image align-left">
+					<a href="#" onclick="openFullscreen('{{ post.photo.url }}', 'image', {{ post.id }}); return false;" title="">
+						<img src="{{ post.photo.url }}" alt="">
+					</a>
+				</div>
+                {% elif post.media_type == "video" and post.video %}
+                <div class="linked-image align-left" style="max-width: 500px; overflow: hidden;">
+                    <a href="#" onclick="openFullscreen('{{ post.video.url }}', 'video'); return false;">
+                        <video style="width: 100%; height: auto;">
+                            <source src="{{ post.video.url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </a>
+                </div>
+                {% elif post.media_type == "music" and post.music %}
+                <div class="linked-image align-left">
+                    <a href="#" onclick="openFullscreen('{{ post.music.url }}', 'audio'); return false;">
+                        <audio>
+                            <source src="{{ post.music.url }}" type="audio/mpeg">
+                            Your browser does not support the audio tag.
+                        </audio>
+                    </a>
+                </div>
+                {% endif %}
+                <div class="detail">
+                    <p>{{ post.caption|truncatewords:20 }}</p>
+                </div>
+                <div class="we-video-info">
+                    <ul>
+                        <li>
+                            <span class="views" data-toggle="tooltip" id="view-count-{{ post.id }}" title="views">
+                                <i class="fa fa-eye"></i>
+                                <ins>{{ post.views }}</ins>
+                            </span>
+                        </li>
+                        <li>
+                            <span class="comment" data-toggle="tooltip" title="Comments">
+                                <i class="fa fa-comments-o"></i>
+                                <ins>52</ins>
+                            </span>
+                        </li>
+						<li>
+							<span 
+								class="like1 {% if request.user in post.liked_by.all %}liked1{% endif %}" 
+								data-toggle="tooltip" 
+								title="Like" 
+								id="like-button-{{ post.id }}"
+								data-post-id="{{ post.id }}"
+								onclick="toggleLikeDislike(this, 'like')">
+								<i class="fa fa-thumbs-up"></i>
+								<ins id="like-count-{{ post.id }}">{{ post.like }}</ins>
+							</span>
+						</li>
+						
+						<li>
+							<span 
+								class="dislike1 {% if request.user in post.disliked_by.all %}disliked1{% endif %}" 
+								data-toggle="tooltip" 
+								title="Dislike" 
+								id="dislike-button-{{ post.id }}"
+								data-post-id="{{ post.id }}"
+								onclick="toggleLikeDislike(this, 'dislike')">
+								<i class="fa fa-thumbs-down"></i>
+								<ins id="dislike-count-{{ post.id }}">{{ post.dislike }}</ins>
+							</span>
+						</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+									
+								
+							</div><!-- centerl meta -->
+							<div class="col-lg-3">
+								<aside class="sidebar static">
+									<div class="widget">
+										<div class="banner medium-opacity bluesh">
+											<div style="background-image: url(images/resources/baner-widgetbg.jpg)" class="bg-image"></div>
+											<div class="baner-top">
+												<span><img src="{% static 'images/book-icon.png' %}" alt=""></span>
+												<i class="fa fa-ellipsis-h"></i>
+											</div>
+											<div class="banermeta">
+												<p>
+													create your own favourit page.
+												</p>
+												<span>like them all</span>
+												<a href="#" title="" data-ripple="">start now!</a>
+											</div>
+										</div>											
+									</div>
+									<div class="widget friend-list stick-widget">
+										<h4 class="widget-title">Friends</h4>
+										<div id="searchDir"></div>
+										<ul id="people-list">
+											<!-- to add popup - class="friendz-list" -->
+											{% for user in users %}
+											{% if not user.is_superuser and user != request.user %}
+											<li>
+												<figure>
+													<a href="{% url 'messages1' receiver_username=user.username %}"><img src="{% if user.profile %}{{ user.profile.url }}{% else %}{{ default.png }}{% endif %}" alt=""></a>
+													<span class="status f-online"></span>
+												</figure>
+												<div class="friendz-meta">
+													<a href="{% url 'messages1' receiver_username=user.username %}">{{ user.username }}</a>
+													<i><a href="">{{ user.email }}</a></i>
+												</div>
+											</li>
+											{% endif %}
+											{% empty %}
+											<li>No friends found.</li>
+											
+											{% endfor %}
+										</ul>
+										<div class="chat-box">
+											<div class="chat-head">
+												<span class="status f-online"></span>
+												<h6>Bucky Barnes</h6>
+												<div class="more">
+													<span><i class="ti-more-alt"></i></span>
+													<span class="close-mesage"><i class="ti-close"></i></span>
+												</div>
+											</div>
+											<div class="chat-list">
+												<ul>
+													<li class="me">
+														<div class="chat-thumb"><img src="{% static 'images/resources/chatlist1.jpg' %}" alt=""></div>
+														<div class="notification-event">
+															<span class="chat-message-item">
+																Hi James! Please remember to buy the food for tomorrow! I’m gonna be handling the gifts and Jake’s gonna get the drinks
+															</span>
+															<span class="notification-date"><time datetime="2004-07-24T18:18" class="entry-date updated">Yesterday at 8:10pm</time></span>
+														</div>
+													</li>
+													<li class="you">
+														<div class="chat-thumb"><img src="{% static 'images/resources/chatlist2.jpg' %}" alt=""></div>
+														<div class="notification-event">
+															<span class="chat-message-item">
+																Hi James! Please remember to buy the food for tomorrow! I’m gonna be handling the gifts and Jake’s gonna get the drinks
+															</span>
+															<span class="notification-date"><time datetime="2004-07-24T18:18" class="entry-date updated">Yesterday at 8:10pm</time></span>
+														</div>
+													</li>
+													<li class="me">
+														<div class="chat-thumb"><img src="{% static 'images/resources/chatlist1.jpg' %}" alt=""></div>
+														<div class="notification-event">
+															<span class="chat-message-item">
+																Hi James! Please remember to buy the food for tomorrow! I’m gonna be handling the gifts and Jake’s gonna get the drinks
+															</span>
+															<span class="notification-date"><time datetime="2004-07-24T18:18" class="entry-date updated">Yesterday at 8:10pm</time></span>
+														</div>
+													</li>
+												</ul>
+												<form class="text-box">
+													<textarea placeholder="Post enter to post..."></textarea>
+													<div class="add-smiles">
+														<span title="add icon" class="em em-expressionless"></span>
+													</div>
+													<div class="smiles-bunch">
+														<i class="em em---1"></i>
+														<i class="em em-smiley"></i>
+														<i class="em em-anguished"></i>
+														<i class="em em-laughing"></i>
+														<i class="em em-angry"></i>
+														<i class="em em-astonished"></i>
+														<i class="em em-blush"></i>
+														<i class="em em-disappointed"></i>
+														<i class="em em-worried"></i>
+														<i class="em em-kissing_heart"></i>
+														<i class="em em-rage"></i>
+														<i class="em em-stuck_out_tongue"></i>
+													</div>
+													<button type="submit"></button>
+												</form>
+											</div>
+										</div>
+									</div><!-- friends list sidebar -->
+								</aside>
+							</div><!-- sidebar -->
+						</div>	
+					</div>
+				</div>
+			</div>
+		</div>	
+	</section>
+
+	<div id="fullscreen-modal" class="fullscreen-modal" onclick="closeFullscreen()">
+		<span class="close-btn">&times;</span>
+		<img id="fullscreen-img" src="" alt="">
+		<video id="fullscreen-video" controls style="display: none;"></video>
+		<audio id="fullscreen-audio" controls style="display: none;"></audio>
+	</div>
+	
+	<style>
+	.fullscreen-modal {
+		display: none;
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.8);
+		justify-content: center;
+		align-items: center;
+		z-index: 1000;
+	}
+	.fullscreen-modal img, .fullscreen-modal video, .fullscreen-modal audio {
+		max-width: 90%;
+		max-height: 90%;
+	}
+	.close-btn {
+		position: absolute;
+		top: 20px;
+		right: 30px;
+		font-size: 30px;
+		color: white;
+		cursor: pointer;
+	}
+	</style>
+	
+	<script>
+	function openFullscreen(src, type, postId) {
+    var modal = document.getElementById("fullscreen-modal");
+    var img = document.getElementById("fullscreen-img");
+    var video = document.getElementById("fullscreen-video");
+    var audio = document.getElementById("fullscreen-audio");
+
+    // Hide all media elements
+    img.style.display = "none";
+    video.style.display = "none";
+    audio.style.display = "none";
+
+    // Reset previous media sources
+    video.src = "";
+    audio.src = "";
+    img.src = "";
+
+    // Set the correct media source
+    if (type === "video") {
+        video.src = src;
+        video.style.display = "block";
+    } else if (type === "audio") {
+        audio.src = src;
+        audio.style.display = "block";
+    } else {
+        img.src = src;
+        img.style.display = "block";
+    }
+
+    // Show modal
+    modal.style.display = "flex";
+
+    // Increment views via AJAX
+    fetch(`/increment-views/${postId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}', // Ensure CSRF token is included
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        if (response.ok) {
+            // Optionally update the view count on the page
+            var viewCount = document.getElementById(`view-count-${postId}`);
+            if (viewCount) {
+                viewCount.querySelector('ins').textContent = parseInt(viewCount.querySelector('ins').textContent) + 1;
+            }
+        }
+    }).catch(error => console.error('Error incrementing views:', error));
+}
+
+// Function to close modal
+function closeFullscreen() {
+    var modal = document.getElementById("fullscreen-modal");
+    var video = document.getElementById("fullscreen-video");
+    var audio = document.getElementById("fullscreen-audio");
+
+    // Stop playing media when modal closes
+    video.pause();
+    audio.pause();
+
+    // Hide modal
+    modal.style.display = "none";
+}
+	</script>
+
+
+<script>
+	function toggleLikeDislike(element, action) {
+		let postId = element.dataset.postId;
+		let likeButton = document.getElementById(`like-button-${postId}`);
+		let dislikeButton = document.getElementById(`dislike-button-${postId}`);
+		let likeCount = document.getElementById(`like-count-${postId}`);
+		let dislikeCount = document.getElementById(`dislike-count-${postId}`);
+	
+		fetch(`/${action}-post/${postId}/`, {
+			method: 'POST',
+			headers: {
+				'X-CSRFToken': '{{ csrf_token }}',
+				'Content-Type': 'application/json'
+			}
+		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.success) {
+				// Update both like and dislike counts in real-time
+				likeCount.textContent = data.likes;
+				dislikeCount.textContent = data.dislikes;
+	
+				// Ensure UI updates correctly for both buttons
+				likeButton.classList.toggle('liked1', data.likes > 0);
+				dislikeButton.classList.toggle('disliked1', data.dislikes > 0);
+	
+				// Enable clicks on both buttons after toggle
+				likeButton.style.pointerEvents = "auto";
+				dislikeButton.style.pointerEvents = "auto";
+			} else {
+				alert(data.error);
+			}
+		})
+		.catch(error => console.error("Error:", error));
+	}
+	</script>
+
+	{% endblock content %}

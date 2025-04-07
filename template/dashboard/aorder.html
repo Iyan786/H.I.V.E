@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% load static %} 
+{% block content %}
+
+<div class="page-wrapper">
+    <!-- ============================================================== -->
+    <!-- Bread crumb and right sidebar toggle -->
+    <!-- ============================================================== -->
+    <div class="page-breadcrumb">
+        <div class="row">
+            <div class="col-12 d-flex no-block align-items-center">
+            </div>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Bread crumb and right sidebar toggle -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- Container fluid  -->
+    <!-- ============================================================== -->
+    <div class="container-fluid">
+        <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Username Table</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .button {
+            padding: 8px 12px;
+            margin: 0 5px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .edit-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Orders List</h2><table>
+        <thead>
+            <tr>
+                <th>Order No</th>
+                <th>User Name</th> <!-- New column for the user's name -->
+                <th>Item Name</th>
+                <th>Quantity</th>
+                <th>Total Price</th>
+                <th>Order Status</th> <!-- New column for order status -->
+                <th>Actions</th> <!-- Optional: Actions like Download Bill -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in page_obj %}
+            <tr>
+                <!-- Calculate the correct order number based on the current page -->
+                <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
+                <td>{{ obj.user.username }}</td> <!-- Access the user's username -->
+                <td>{{ obj.item.Item_name }}</td> <!-- Assuming Item_name is the name of the item -->
+                <td>{{ obj.quantity }}</td>
+                <td>RS. {{ obj.total_price }}</td>
+                <td>
+                    {% if obj.order_status == "Canceled" %}
+                        <span class="text-danger">Order is Canceled</span> <!-- Display message if canceled -->
+                    {% else %}
+                        <form method="POST" action="{% url 'update_order_status' obj.id %}" class="status-form" id="form-{{ obj.id }}">
+                            {% csrf_token %}
+                            <select name="order_status" class="form-control" style="background-color: #17a2b8; color: white;" onchange="this.form.submit();">
+                                <option value="Pending" {% if obj.order_status == "Pending" %}selected{% endif %}>Pending</option>
+                                <option value="Shipped" {% if obj.order_status == "Shipped" %}selected{% endif %}>Shipped</option>
+                                <option value="Delivered" {% if obj.order_status == "Delivered" %}selected{% endif %}>Delivered</option>
+                            </select>
+                        </form>
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="POST" action="{% url 'download_bill' obj.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-info btn-sm">
+                            Download Bill
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    
+    
+    
+            
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <!-- Previous page link -->
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </span>
+                    </li>
+                    {% endif %}
+            
+                    <!-- Page numbers -->
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+            
+                    <!-- Next page link -->
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>            
+</body>
+</html>
+
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Container fluid  -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- footer -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- End footer -->
+    <!-- ============================================================== -->
+</div>
+<!-- ============================================================== -->
+<!-- End Page wrapper  -->
+<!-- ============================================================== -->
+</div>
+
+{% endblock content %}

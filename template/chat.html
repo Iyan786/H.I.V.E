@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Chat</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { background-color: #f8f9fa; }
+        .chat-container { max-width: 600px; margin: auto; margin-top: 50px; }
+        .chat-box { height: 400px; overflow-y: auto; background: #fff; padding: 15px; border-radius: 10px; }
+        .message { margin-bottom: 10px; }
+        .sent { text-align: right; color: white; background: blue; padding: 8px 12px; border-radius: 10px; display: inline-block; }
+        .received { text-align: left; color: black; background: lightgray; padding: 8px 12px; border-radius: 10px; display: inline-block; }
+
+.chat-box {
+    height: 400px;
+    overflow-y: auto;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.message-container {
+    display: flex;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.left {
+    justify-content: flex-start;
+}
+
+.right {
+    justify-content: flex-end;
+}
+
+.message {
+    max-width: 60%;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 14px;
+    word-wrap: break-word;
+}
+
+.sent {
+    background-color: #007bff; /* Blue */
+    color: white;
+}
+
+.received {
+    background-color: #e0e0e0; /* Light Gray */
+    color: black;
+}
+
+
+
+    </style>
+</head>
+<body>
+
+<div class="container chat-container">
+    <h3 class="text-center">Live Chat</h3>
+    <div class="mb-3">
+        <input type="text" id="username" class="form-control" value="{{ request.user.username }}" readonly>
+    </div>
+    <div class="mb-3">
+        <input type="text" id="receiver" class="form-control" value="{{ receiver }}" placeholder="Enter receiver's username">
+    </div>
+    
+    <div class="chat-box" id="chatBox">
+        {% for msg in messages %}
+            {% if msg.sender == request.user %}
+                <!-- Sender Message (Left) -->
+                <div class="message-container right">
+                    <p class="message sent">{{ msg.message }}</p>
+                </div>
+            {% else %}
+                <!-- Receiver Message (Right) -->
+                <div class="message-container left">
+                    <p class="message received"><strong>{{ msg.sender.username }}:</strong> {{ msg.message }}</p>
+                </div>
+            {% endif %}
+        {% empty %}
+            <p class="text-center">No messages yet.</p>
+        {% endfor %}
+    </div>
+    
+    <div class="input-group mt-3 input-container">
+        <input id="messageInput" type="text" class="form-control message-input" placeholder="Type your message...">
+        <button class="btn btn-primary send-button" onclick="sendMessage()">Send</button>
+    </div>
+    
+</div>
+
+<script>
+    const roomName = "general";
+    const socket = new WebSocket(`ws://${window.location.host}/ws/chat/${roomName}/`);
+    const currentUser = "{{ request.user.username }}"; // Get logged-in user's username
+
+    socket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        const chatBox = document.getElementById("chatBox");
+
+        let messageElement = document.createElement("div");
+        messageElement.classList.add("message-container");
+
+        // If the sender is the current user, align right, else align left
+        if (data.username === currentUser) {
+            messageElement.classList.add("right");
+            messageElement.innerHTML = `<p class="message sent">${data.message}</p>`;
+        } else {
+            messageElement.classList.add("left");
+            messageElement.innerHTML = `<p class="message received"><strong>${data.username}:</strong> ${data.message}</p>`;
+        }
+
+        chatBox.appendChild(messageElement);
+        chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the latest message
+    };
+
+    function sendMessage() {
+        const messageInput = document.getElementById("messageInput").value;
+        const receiver = document.getElementById("receiver").value; // Assuming a receiver input exists
+
+        if (messageInput.trim() !== "" && receiver.trim() !== "") {
+            socket.send(JSON.stringify({
+                "message": messageInput,
+                "username": currentUser,
+                "receiver": receiver
+            }));
+
+            // Add the message immediately to chat box for instant display
+            const chatBox = document.getElementById("chatBox");
+            let messageElement = document.createElement("div");
+            messageElement.classList.add("message-container", "right");
+            messageElement.innerHTML = `<p class="message sent">${messageInput}</p>`;
+
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll
+
+            document.getElementById("messageInput").value = ""; // Clear input box
+        }
+    }
+</script>
+
+
+</body>
+</html>
